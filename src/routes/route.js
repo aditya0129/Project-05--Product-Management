@@ -1,11 +1,11 @@
 const router = require("express").Router();
+const { register,  getUsers, userLogin}= require("../controllers/userController") 
 
 
 
-
-router.post("/register");
-router.post("/login");
-router.get("/user/:userId/profile");
+router.post("/register",register);
+router.post("/login",userLogin);
+router.get("/user/:userId/profile",getUsers);
 
 
 

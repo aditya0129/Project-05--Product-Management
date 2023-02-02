@@ -8,12 +8,13 @@ const jwt = require("jsonwebtoken")
 
 const isAuthenticated = async function ( req , res , next ) {
     try{
-        let token = req.bearer['x-api-key']
+        let token = req.headers.authorization
 
         if( !token ){
             return res.status(400).send({ status : false , message : "Token must be present in the bearer."})
         }
-
+        token = token.slice(7)
+        
         jwt.verify( token , "group-13-project" , function ( error , decodedToken ) {
             if ( error) {
                 if ( error.name === "JsonWebTokenError" ) {
