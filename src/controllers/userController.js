@@ -12,12 +12,13 @@ const { isValidObjectId } = require("mongoose");
 
 const register = async function (req, res) {
     try {
+        let files = req.files
         let data = req.body;
         if (data.address) {
             data.address = JSON.parse(data.address);
         }
 
-        if (Object.keys(data).length == 0)
+        if (Object.keys(data).length == 0 && (!files || files.length == 0))
             return res
                 .status(400)
                 .send({ status: false, message: "Body can't be empty" });
@@ -157,20 +158,10 @@ const register = async function (req, res) {
 
         }
 
-        let files = req.files
         if (files && files.length > 0) {
             let uploadFileURL = await uploadFile(files[0])
             data.profileImage = uploadFileURL
-
-            const uniqueImage = await userModel.findOne({ profileImage: uploadFileURL })
-            if (uniqueImage) {
-                return res.status(400).send({ status: false, message: "Profile Image is already exist." })
-            }
-
-        } else {
-            return res.status(400).send({ status: false, message: "No file found" })
         }
-
         let savedata = await userModel.create(data);
         res.status(201).send({
             status: true,
@@ -180,7 +171,8 @@ const register = async function (req, res) {
     } catch (error) {
         res.status(500).send({ status: false, message: error.message });
     }
-};
+}
+
 
 
 
