@@ -54,9 +54,10 @@ const register = async function (req, res) {
                 .status(400)
                 .send({ status: false, messsage: "please provide valid email" });
 
-        // if(!profileImage) return res.status(400).send({status:false,messsage:"please provide profileImage"})
-
-        // if(!validator.isURL(profileImage)) return res.status(400).send({status:false,messsage:"please provide valid profileImage URL"})
+        let checkEmailId = await userModel.findOne({ email : email })
+        if(checkEmailId){
+            return res.status(400).send({ status : false , message : "This email Id is already in use."})
+        }
 
         if (!phone)
             return res
@@ -68,6 +69,10 @@ const register = async function (req, res) {
                 .status(400)
                 .send({ status: false, messsage: "please provide valid phone Number" });
 
+        let checkphone = await userModel.findOne({ phone : phone })
+        if(checkphone){
+            return res.status(400).send({ status : false , message : "This mobile number is already in use."})
+        }
         if (!password)
             return res
                 .status(400)
@@ -78,14 +83,14 @@ const register = async function (req, res) {
                 .status(400)
                 .send({ status: false, messsage: "please provide valid password" });
 
-        let hashing = bcrypt.hashSync("password", 8)
+        let hashing = bcrypt.hashSync( password, 8 )
         data.password = hashing;
 
-        if (!address)
-            return res
-                .status(400)
-                .send({ status: false, messsage: "please provide address" });
-
+        if (address){
+            if (typeof address != "object") {
+                return res.status(400).send({ status: false, message: "value of address must be in json format" });
+            }
+    
         if (!address.shipping)
             return res
                 .status(400)
@@ -116,16 +121,6 @@ const register = async function (req, res) {
                 .status(400)
                 .send({ status: false, messsage: "please provide pincode" });
 
-        // if (
-        //     !validatePincode(address.shipping.pincode)
-
-        // ) {
-        //     return res.status(400).send({
-        //         status: false,
-        //         message: "make sure pincode should be numeric only and 6 digit number",
-        //     });
-        // }
-
         if (!address.billing)
             return res
                 .status(400)
@@ -155,16 +150,12 @@ const register = async function (req, res) {
             return res
                 .status(400)
                 .send({ status: false, messsage: "please provide pincode" });
+        }else{
+            return res
+            .status(400)
+            .send({ status: false, messsage: "please provide address" });
 
-        // if (
-        //     !validatePincode(!address.billing.pincode)
-
-        // ) {
-        //     return res.status(400).send({
-        //         status: false,
-        //         message: "make sure pincode should be numeric only and 6 digit number",
-        //     });
-        // }
+        }
 
         let files = req.files
         if (files && files.length > 0) {
@@ -201,7 +192,7 @@ const userLogin = async function (req, res) {
     try {
         let { email, password } = req.body;
 
-        if (Object.keys(req.body).length === 0) {
+        if (Object.keys(req.body).length == 0) {
             return res
                 .status(400)
                 .send({ status: false, message: "please input user Details" });
@@ -225,24 +216,24 @@ const userLogin = async function (req, res) {
                 .send({ status: false, message: "Password is mandatory" });
         }
 
-        if (password.length <= 8 || password.length >= 15) {
-            return res.status(400).send({
-                status: false,
-                message: "the length of password must be min: 8 and max: 15",
-            });
-        }
-
-        let verifyUser = await userModel.findOne({ email: email });
-        if (!verifyUser) {
+        if (!validatePassword(password)) {
             return res
                 .status(400)
+                .send({ status: false, message: "Password should be Valid" });
+        }
+
+        let verifyUser = await userModel.findOne ({ email : email });
+        console.log(verifyUser)
+        if (!verifyUser) {
+            return res 
+               .status(400)
                 .send({ status: false, message: "Invalid Login Credential" });
         }
 
 
         let hash = verifyUser.password;
 
-        let isCorrect = bcrypt.compareSync("password", hash)
+        let isCorrect = bcrypt.compareSync(password, hash)
         if (!isCorrect) return res.status(400).send({ status: false, message: "Password is incorrect" })
 
         let payload = { userId: verifyUser["_id"], iat: Date.now() };
