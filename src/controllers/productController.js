@@ -1,6 +1,9 @@
 const productModel = require("../models/productModel");
 const mongoose = require("mongoose");
 
+
+
+
 let createProduct = async function (req, res) {
   try {
 
@@ -13,6 +16,66 @@ let createProduct = async function (req, res) {
     res.status(500).send({ status: false, message: error.message });
   }
 };
+
+
+
+
+const getProducts= async function (req, res) {
+  try {
+      let obj = req.query
+      let filter = { isDeleted: false }
+      let { size, name, priceLessThan, priceGreaterThan, priceSort } = obj
+
+      if(!obj){
+      if (Object.keys(obj).length === 0) {
+          return res.status(400).send({ status: false, message: "Please give some parameters." })
+      }
+  }
+      if (Object.keys(obj).length != 0) {
+
+          if (size) {
+              if (!isValidAvailableSizes(size)) {
+                  return res.status(400).send({ status: false, message: "Size is not valid" })
+              }
+              filter['availableSizes'] = { $in: size }
+          }
+
+          if (name) {
+              filter['title'] = { $regex: name }  
+          }
+
+          if (priceLessThan) {
+              if (!isValidPrice(priceLessThan)) {
+                  return res.status(400).send({ status: false, message: "Price is not valid" })
+              }
+              filter['price'] = { $lt: priceLessThan }
+          }
+
+          if (priceGreaterThan) {
+              if (!isValidPrice(priceGreaterThan)) {
+                  return res.status(400).send({ status: false, message: "Not a valid Price" })
+              }
+              filter['price'] = { $gt: priceGreaterThan }
+          }
+
+          if (priceSort) {
+              if (!(priceSort == 1 || priceSort == -1)) {
+                  return res.status(400).send({ status: false, message: "Price can be sorted with the value 1 or -1 only" })
+              }
+          }
+      }
+
+      let productDetails = await productModel.find(filter).sort({ price: priceSort })
+      if (productDetails.length === 0) {
+          return res.status(404).send({ status: false, message: "no data found" })
+      }
+      return res.status(200).send({ status: true, message: 'Success', data: productDetails })
+
+
+  } catch (error) {
+      return res.status(500).send({ error: error.message })
+  }
+}
 
 
 
@@ -39,4 +102,4 @@ const getProductById = async function (req, res){
   }
 }
 
-module.exports = { createProduct , getProductById };
+module.exports = { createProduct , getProductById ,getProducts};

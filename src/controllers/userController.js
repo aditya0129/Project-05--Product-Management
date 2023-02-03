@@ -216,18 +216,12 @@ const userLogin = async function (req, res) {
                 .send({ status: false, message: "Password is mandatory" });
         }
 
-        if (!validatePassword(password)) {
-            return res
-                .status(400)
-                .send({ status: false, message: "Password should be Valid" });
-        }
-
         let verifyUser = await userModel.findOne ({ email : email });
         console.log(verifyUser)
         if (!verifyUser) {
             return res 
                .status(400)
-                .send({ status: false, message: "Invalid Login Credential" });
+                .send({ status: false, message: "user not found" });
         }
 
 
