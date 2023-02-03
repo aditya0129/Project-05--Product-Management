@@ -1,21 +1,182 @@
 const productModel = require("../models/productModel");
 const mongoose = require("mongoose");
-
-
-
+const uploadFile= require('../AWS/awsConfig')
+const {
+    validateName,
+    ValidateStyle,
+    validatePrice,
+  } = require("../validation/validator");
 
 let createProduct = async function (req, res) {
-  try {
+    try {
+      let data = req.body;
+  
+      if (Object.keys(data).length == 0) {
+        return res
+          .status(400)
+          .send({
+            status: "false",
+            message: "Please enter the data in request body",
+          });
+      }
+  
+      let {
+        title,
+        description,
+        price,
+        currencyId,
+        currencyFormat,
+        isFreeShipping,
+        style,
+        availableSizes,
+        installments,
+        productImage,
+      } = data;
+      // Title valid..
+      if (!title || title == "") {
+        return res
+          .status(400)
+          .send({
+            status: false,
+            message: "Title is mandatory and title Should not be Empty",
+          });
+      }
+  
+      if (!validateName(title)) {
+        return res
+          .status(400)
+          .send({ status: false, message: " Invalid Title " });
+      }
+      const checkTitle = await productModel.findOne({ title });
+      if (checkTitle) {
+        return res
+          .status(400)
+          .send({
+            status: false,
+            message: "This title already exist, provide a new title",
+          });
+      }
+      //description valid
+      if (!description || description == "") {
+        return res
+          .status(400)
+          .send({
+            status: false,
+            message:
+              "Description is mandatory and description Should not be Empty",
+          });
+      }
+  
+      if (!validateName(description)) {
+        return res
+          .status(400)
+          .send({ status: false, message: " Invalid description " });
+      }
+      // price valid..
+      if (!price) {
+        return res
+          .status(400)
+          .send({ status: false, message: "Price is mandatory " });
+      }
+  
+      if (!validatePrice(price)) {
+        return res
+          .status(400)
+          .send({
+            status: false,
+            message: "Price is not present in correct format",
+          });
+      }
+      // currencyId valid..
+      if (!currencyId) {
+        return res
+          .status(400)
+          .send({ status: false, message: "Currency Id is mandatory " });
+      }
+  
+      if (currencyId != "INR") {
+        return res
+          .status(400)
+          .send({
+            status: false,
+            msg: " Please provide the currencyId as `INR` ",
+          });
+      }
+      // currencyFormat valid..
+      if (!currencyFormat) {
+        return res
+          .status(400)
+          .send({ status: false, message: "Currency Format is mandatory " });
+      }
+  
+      if (currencyFormat != "₹") {
+        return res
+          .status(400)
+          .send({
+            status: false,
+            message: "Please provide the currencyformat as `₹` ",
+          });
+      }
+      // isFreeShipping valid..
+      if (isFreeShipping) {
+        if (!(isFreeShipping == "true" || isFreeShipping == "false")) {
+          return res
+            .status(400)
+            .send({
+              status: false,
+              message: "isFreeShipping should either be True, or False.",
+            });
+        }
+      }
+  
+      // files valid..
+      let files = req.files
+      if (files && files.length > 0) {
+        if (!ValidateFile(files[0].originalname))
+          return res
+            .status(400)
+            .send({ status: false, message: `Enter format jpeg/jpg/png only.` });
+  
+        let uploadedFileURL = await uploadFile.uploadFile(files[0]);
+        data.productImage = uploadedFileURL;
+      } else {
+        return res.status(400).send({ message: "Files are required " });
+      }
+      // style valid..
+      if (!ValidateStyle(style)) {
+        return res
+          .status(400)
+          .send({ status: false, message: "Style is not in correct format" });
+      }
+      let availableSizesEnum = productModel.schema.obj.availableSizes.enum;
+      if (!availableSizesEnum.includes(data.availableSizes))
+        return res
+          .status(400)
+          .send({ status: false, msg: "availableSizes should be S, XS, M, X, L, XXL, XL" });
+  
+      // installements valid..
+      if (installments) {
+        if (!(installments || typeof installments == Number)) {
+          return res
+            .status(400)
+            .send({
+              status: false,
+              message: "Installments should be in correct format",
+            });
+        }
+      }
+  
+      let savedProduct = await productModel.create(data);
+  
+      return res
+        .status(201)
+        .send({ status: true, message: "Success", data: savedProduct });
+    } catch (error) {
+      res.status(500).send({ status: false, message: error.message });
+    }
+  };
 
-    let savedProduct = await productModel.create(data);
 
-    return res
-      .status(201)
-      .send({ status: true, message: "Success", data: savedProduct });
-  } catch (error) {
-    res.status(500).send({ status: false, message: error.message });
-  }
-};
 
 
 

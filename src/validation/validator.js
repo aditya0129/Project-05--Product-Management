@@ -48,5 +48,14 @@ const validatePlace = (value) => {
     return (/^[^\W\d_]+\.?(?:[-\s'’][^\W\d_]+\.?)*$/).test(value);
 }
 
+//Style Validation
+const ValidateStyle = function (value) {
+    return /^[a-zA-Z _.-]+$/.test(value);
+  };
 
-module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace }
+//Price validation
+const validatePrice = function (price) {
+    return /^\d{0,8}(\.\d{1,4})?$/.test(price);
+  };
+
+module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle }
