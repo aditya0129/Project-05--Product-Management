@@ -102,4 +102,16 @@ const getProductById = async function (req, res){
   }
 }
 
-module.exports = { createProduct , getProductById ,getProducts};
+const productdelete=async function (req,res){
+    try{
+        let productid=req.params.productId
+        if(!mongoose.isValidObjectId(productid)) return res.status(400).send({status:false,message:"please provide valid productid"})
+    let findid=await productmodel.findOneAndUpdate({_id:productid,isDelete:false},{isDelete:true,Atdeleted:Date.now()})
+    if(!findid) return res.status(400).send({status:false,message:"product already deleted"})
+    res.status(200).send({status:true,message:"product successsfully deleted"})
+}catch(error){
+    res.status(500).send({status:false,message:error.message})
+}
+}
+
+module.exports = { createProduct , getProductById ,getProducts,productdelete};
