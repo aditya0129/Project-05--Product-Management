@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 
-const userSchema = new mongoose.Schema({
-
+const userSchema = new mongoose.Schema(
+    {
     fname: {
         type: String,
         required: true,
@@ -41,14 +41,14 @@ const userSchema = new mongoose.Schema({
         shipping: {
             street: { type: String, required: true, trim: true },
             city: { type: String, required: true, trim: true },
-            pincode: { type: Number, required: true, trim: true }
+            pincode: { type: Number, required: true }
         },
 
         billing: {
             street: { type: String, required: true, trim: true },
             city: { type: String, required: true, trim: true },
-            pincode: { type: Number, required: true, trim: true }
-        },
+            pincode: { type: Number, required: true }
+        }, 
     }
 
 }, { timestamps: true })
