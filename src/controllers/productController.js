@@ -1,11 +1,7 @@
 const productModel = require("../models/productModel");
 const mongoose = require("mongoose");
 const uploadFile= require('../AWS/awsConfig')
-const {
-    validateName,
-    ValidateStyle,
-    validatePrice,
-  } = require("../validation/validator");
+const { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping  } = require("../validation/validator");
 
 let createProduct = async function (req, res) {
     try {
@@ -42,7 +38,7 @@ let createProduct = async function (req, res) {
           });
       }
   
-      if (!validateName(title)) {
+      if (!validateName(title.trim())) {
         return res
           .status(400)
           .send({ status: false, message: " Invalid Title " });
@@ -67,7 +63,7 @@ let createProduct = async function (req, res) {
           });
       }
   
-      if (!validateName(description)) {
+      if (!validateName(description.trim())) {
         return res
           .status(400)
           .send({ status: false, message: " Invalid description " });
@@ -79,7 +75,7 @@ let createProduct = async function (req, res) {
           .send({ status: false, message: "Price is mandatory " });
       }
   
-      if (!validatePrice(price)) {
+      if (!validatePrice(price.trim())) {
         return res
           .status(400)
           .send({
@@ -94,12 +90,12 @@ let createProduct = async function (req, res) {
           .send({ status: false, message: "Currency Id is mandatory " });
       }
   
-      if (currencyId != "INR") {
+      if (currencyId.trim() != "INR") {
         return res
           .status(400)
           .send({
             status: false,
-            msg: " Please provide the currencyId as `INR` ",
+            msg: " Please provide the currencyId as INR ",
           });
       }
       // currencyFormat valid..
@@ -109,7 +105,7 @@ let createProduct = async function (req, res) {
           .send({ status: false, message: "Currency Format is mandatory " });
       }
   
-      if (currencyFormat != "₹") {
+      if (currencyFormat.trim() != "₹") {
         return res
           .status(400)
           .send({
@@ -118,8 +114,10 @@ let createProduct = async function (req, res) {
           });
       }
       // isFreeShipping valid..
+     
       if (isFreeShipping) {
-        if (!(isFreeShipping == "true" || isFreeShipping == "false")) {
+        
+        if (!(isFreeShipping.trim() == "true" || isFreeShipping.trim() == "false" )) {
           return res
             .status(400)
             .send({
@@ -143,20 +141,20 @@ let createProduct = async function (req, res) {
         return res.status(400).send({ message: "Files are required " });
       }
       // style valid..
-      if (!ValidateStyle(style)) {
+      if (!ValidateStyle(style.trim())) {
         return res
           .status(400)
           .send({ status: false, message: "Style is not in correct format" });
       }
       let availableSizesEnum = productModel.schema.obj.availableSizes.enum;
-      if (!availableSizesEnum.includes(data.availableSizes))
+      if (!availableSizesEnum.includes(data.availableSizes.trim().toUpperCase()))
         return res
           .status(400)
           .send({ status: false, msg: "availableSizes should be S, XS, M, X, L, XXL, XL" });
   
       // installements valid..
       if (installments) {
-        if (!(installments || typeof installments == Number)) {
+        if (!(installments.trim() || typeof installments.trim() == Number)) {
           return res
             .status(400)
             .send({

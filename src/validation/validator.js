@@ -48,6 +48,12 @@ const validatePlace = (value) => {
     return (/^[^\W\d_]+\.?(?:[-\s'’][^\W\d_]+\.?)*$/).test(value);
 }
 
+const ValidateFile = (img) => {
+    const regex = /(\/*\.(?:png|gif|webp|jpeg|jpg))/.test(img)
+    return regex
+  }
+
+
 //Style Validation
 const ValidateStyle = function (value) {
     return /^[a-zA-Z _.-]+$/.test(value);
@@ -55,7 +61,12 @@ const ValidateStyle = function (value) {
 
 //Price validation
 const validatePrice = function (price) {
-    return /^\d{0,8}(\.\d{1,4})?$/.test(price);
+    return /^\d{0,8}(\.\d{1,2})?$/.test(price);
   };
 
-module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle }
+  
+  const validateShipping = function (isFreeShipping) {
+    return /^(true|false)$/.test(isFreeShipping);
+  };
+
+module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping }
