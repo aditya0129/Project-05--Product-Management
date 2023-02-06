@@ -147,10 +147,10 @@ let createProduct = async function (req, res) {
           .send({ status: false, message: "Style is not in correct format" });
       }
       let availableSizesEnum = productModel.schema.obj.availableSizes.enum;
-      if (!availableSizesEnum.includes(data.availableSizes.trim().toUpperCase()))
+      if (!availableSizesEnum.includes(data.availableSizes.trim()))
         return res
           .status(400)
-          .send({ status: false, msg: "availableSizes should be S, XS, M, X, L, XXL, XL" });
+          .send({ status: false, msg: "availableSizes should be [S, XS, M, X, L, XXL, XL]" });
   
       // installements valid..
       if (installments) {
