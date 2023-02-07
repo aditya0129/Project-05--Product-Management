@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const productSchema = new mongoose.Schema({
+
+    
     title: {
         type: String,
         required: true,
@@ -50,7 +52,8 @@ const productSchema = new mongoose.Schema({
         type: [String],
         enum: ["S", "XS", "M", "X", "L", "XXL", "XL"],
         required: true,
-        trim:true
+        trim:true,
+        toUpperCase:true
     },
 
     installments: {

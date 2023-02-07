@@ -2,15 +2,22 @@
 
 
 const validateName = (name) => {
-    return (/^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$/i.test(name));
+  return (/^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$/i.test(name));
 }
+
+
+const validateDesc = function(title){
+  const validTitle= /^[a-z A-Z0-9_]{3,30}$/
+  return validTitle.test(title)
+}
+
 
 
 //====================================== Email Regex Validation =======================================//
 
 
 const validateEmail = (email) => {
-    return (/^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/.test(email));
+  return (/^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/.test(email));
 }
 
 
@@ -18,7 +25,7 @@ const validateEmail = (email) => {
 
 
 const validatePassword = (password) => {
-    return (/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(password));
+  return (/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(password));
 }
 
 
@@ -26,35 +33,44 @@ const validatePassword = (password) => {
 
 
 const validateMobileNo = (Number) => {
-    return ((/^((\+91)?|91)?[6789][0-9]{9}$/g).test(Number));
+  return ((/^((\+91)?|91)?[6789][0-9]{9}$/g).test(Number));
 }
+
+
+//===================================== Pincode Regex Validation ===================================//
+
+
+const validatePincode = (pincode) => {
+  return (/^[1-9][0-9]{5}$/).test(pincode);
+}
+
+
+
+
 
 //===================================== Place Regex Validation ===================================//
 
 
 const validatePlace = (value) => {
-    return (/^[^\W\d_]+\.?(?:[-\s'’][^\W\d_]+\.?)*$/).test(value);
+  return (/^[^\W\d_]+\.?(?:[-\s'’][^\W\d_]+\.?)*$/).test(value);
 }
 
-const ValidateFile = (img) => {
-    const regex = /(\/*\.(?:png|gif|webp|jpeg|jpg))/.test(img)
-    return regex
-  }
+const ValidateFile = (value) => { return (/\.(gif|jpe?g|tiff?|png|webp|bmp)$/).test(value) }
 
 
 //Style Validation
 const ValidateStyle = function (value) {
-    return /^[a-zA-Z _.-]+$/.test(value);
-  };
+  return /^[a-zA-Z _.-]+$/.test(value);
+};
 
 //Price validation
 const validatePrice = function (price) {
-    return /^\d{0,8}(\.\d{1,2})?$/.test(price);
-  };
+  return /^\d{0,8}(\.\d{1,9})?$/.test(price);
+};
 
-  
-  const validateShipping = function (isFreeShipping) {
-    return /^(true|false)$/.test(isFreeShipping);
-  };
 
-module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping }
+const validateShipping = function (isFreeShipping) {
+  return /^(true|false)$/.test(isFreeShipping);
+};
+
+module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping,validateDesc }

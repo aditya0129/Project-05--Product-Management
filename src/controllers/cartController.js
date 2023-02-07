@@ -116,7 +116,7 @@ const getCart = async function (req, res) {
 
 
 
-const updateCart = async function ( req , res ) {
+const updatedCart = async function ( req , res ) {
   try{
     let userId = req.param.userId
 
