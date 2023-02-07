@@ -1,7 +1,10 @@
 const productModel = require("../models/productModel");
-const mongoose = require("mongoose");
+const {isValidObjectId} = require("mongoose");
 const uploadFile= require('../AWS/awsConfig')
 const { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping  } = require("../validation/validator");
+
+
+
 
 let createProduct = async function (req, res) {
     try {
@@ -146,12 +149,25 @@ let createProduct = async function (req, res) {
           .status(400)
           .send({ status: false, message: "Style is not in correct format" });
       }
-      let availableSizesEnum = productModel.schema.obj.availableSizes.enum;
-      if (!availableSizesEnum.includes(data.availableSizes.trim()))
-        return res
-          .status(400)
-          .send({ status: false, msg: "availableSizes should be [S, XS, M, X, L, XXL, XL]" });
-  
+
+      // valid size
+
+     const isValidateSize = function (value)  { 
+      return ["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(value) !== -1 
+    }
+    
+    if (availableSizes) {
+      let size = availableSizes.toUpperCase().split(",")
+      data.availableSizes = size;
+
+
+      for (let i = 0; i < size.length; i++) {
+        if (!isValidateSize(size[i])) {
+          return res.status(400).send({ status: false, message: `${size[i]} size is not available` })
+        }
+      }
+    }
+
       // installements valid..
       if (installments) {
         if (!(installments.trim() || typeof installments.trim() == Number)) {
@@ -193,7 +209,7 @@ const getProducts= async function (req, res) {
       if (Object.keys(obj).length != 0) {
 
           if (size) {
-              if (!isValidAvailableSizes(size)) {
+              if (!["S", "XS","M","X", "L","XXL", "XL"].includes(size)) {
                   return res.status(400).send({ status: false, message: "Size is not valid" })
               }
               filter['availableSizes'] = { $in: size }
@@ -204,14 +220,14 @@ const getProducts= async function (req, res) {
           }
 
           if (priceLessThan) {
-              if (!isValidPrice(priceLessThan)) {
+              if (!validatePrice(priceLessThan)) {
                   return res.status(400).send({ status: false, message: "Price is not valid" })
               }
               filter['price'] = { $lt: priceLessThan }
           }
 
           if (priceGreaterThan) {
-              if (!isValidPrice(priceGreaterThan)) {
+              if (!validatePrice(priceGreaterThan)) {
                   return res.status(400).send({ status: false, message: "Not a valid Price" })
               }
               filter['price'] = { $gt: priceGreaterThan }
@@ -245,13 +261,13 @@ const getProductById = async function (req, res){
 
       let productId = req.params.productId
 
-      if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: `Please Enter Valid ProductId: ${productId}.` })
+      if (!isValidObjectId(productId)) return res.status(404).send({ status: false, message: `Please Enter Valid ProductId: ${productId}.` })
 
      
 
       let getProduct = await productModel.findOne({ _id: productId, isDeleted: false })  
 
-      if (!getProduct) return res.status(404).send({ status: false, message: "Product Data is Not Found!" })
+      if (!getProduct) return res.status(404).send({ status: false, message: "Product data not found , it might be deleted." })
 
       return res.status(200).send({ status: true, message: "Success", data: getProduct })
 
@@ -260,17 +276,160 @@ const getProductById = async function (req, res){
       return res.status(500).send({ status: false, message: error.message })
   }
 }
+   
 
-const productdelete=async function (req,res){
+
+//===========================================                     =============================================//
+//                                            Update Product Data
+//===========================================                     =============================================//
+
+
+const updateProduct = async function ( req , res ) {
+  try{ 
+    let productId = req.params.productId;
+
+    if (!isValidObjectId(productId))
+        return res
+            .status(404)
+            .send({ status: false, message: "Product Id is invalid." });
+
+    let getproductId = await productModel.findOne({ _id: productId });
+    if (!getproductId)
+        return res.status(404).send({ status: false, message: "Product Id not found." });
+
+    let data = req.body
+    
+    let files = req.files
+    
+    let { title , description , price , isFreeShipping , style , availableSizes , installments } = data
+
+
+    if (Object.keys(data).length == 0 && (!files || files.length == 0))
+        return res
+            .status(400)
+            .send({ status: false, message: "At least one field is mendatory." });
+
+    let updatedData = {}
+    if (title) {
+      if(!validateName(title)){
+          return res.status(400).send({ status: false, message: "Product title must be string." });
+     }
+      if ( !title ) {
+          return res.status(400).send({ status: false, message: "Product title can not be empty." });
+      }
+      let checkTitle = await productModel.findOne({ title : title })
+      if (checkTitle) {
+          return res.status(400).send({ status: false, message: "This product title is already used ,please provide another product title." })    
+      }    
+      title = title.trim();
+      updatedData.title = title;
+  }
+  if (description) {
+  //   if(!validateName(description)){
+  //       return res.status(400).send({ status: false, message: "Product description must be string." });
+  //  }
+    if (!description.trim()) {
+        return res.status(400).send({ status: false, message: "Product description can not be empty." });
+    }
+    description = description.trim();
+    updatedData.description = description;
+  }
+  if (price) {
+      if(!validatePrice(price)){
+          return res.status(400).send({ status: false, message: "Product price must be number." });
+     }
+      if (!price.trim()) {
+          return res.status(400).send({ status: false, message: "Product price can not be empty." });
+      }
+      price = price.trim();
+      updatedData.price = price;
+    } 
+
+    
+    if (isFreeShipping) {
+        
+      if (!(isFreeShipping.trim() == "true" || isFreeShipping.trim() == "false" )) {
+        return res
+          .status(400)
+          .send({
+            status: false,
+            message: "isFreeShipping should either be True, or False.",
+          });
+      }
+    }
+
+        if (!isFreeShipping.trim()) {
+            return res.status(400).send({ status: false, message: "Product is free shipping can not be empty." });
+        }
+        isFreeShipping = isFreeShipping.trim();
+        updatedData.isFreeShipping = isFreeShipping;
+      
+      if (style) {
+      //   if(!validateName(style)){
+      //       return res.status(400).send({ status: false, message: "Product style must be number." });
+      //  }
+        if (!style) {
+            return res.status(400).send({ status: false, message: "Product style can not be empty." });
+        }
+        updatedData.style = style;
+      } 
+      if (availableSizes) {
+        if(!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(availableSizes)){
+            return res.status(400).send({ status: false, message: `Product sizes must be from these["S", "XS", "M", "X", "L", "XXL", "XL"].` });
+       }
+        if (!availableSizes.trim()) {
+            return res.status(400).send({ status: false, message: "Product sizes can not be empty." });
+        }
+        availableSizes = availableSizes.trim();
+        updatedData.availableSizes = availableSizes;
+      } 
+      if (installments) {
+          if(!validatePincode(installments)){
+              return res.status(400).send({ status: false, message: "Product installments must be number." });
+         }
+          if (!installments.trim()) {
+              return res.status(400).send({ status: false, message: "Product installments can not be empty." });
+          }
+          installments = installments.trim();
+          updatedData.installments = installments;
+        } 
+        updatedData.deletedAt = Date.now()
+   
+        let updatedProductData = await productModel.findOneAndUpdate(
+          { _id :productId , isDeleted : false },
+          updatedData , 
+          { new :true })
+
+          if( !updatedProductData ) {
+            return res.status(404).send({ status : false , message : "Product is not exist either it is deleted."})
+          }
+          return res.status(200).send({ status : true , message : "Success" , data : updatedProductData})
+  }catch( error ) {
+    return res.status(500).send({ status : false , message : error.message })
+  }
+}
+
+
+
+const deleteProduct=async function (req,res){
     try{
-        let productid=req.params.productId
-        if(!mongoose.isValidObjectId(productid)) return res.status(400).send({status:false,message:"please provide valid productid"})
-    let findid=await productmodel.findOneAndUpdate({_id:productid,isDelete:false},{isDelete:true,Atdeleted:Date.now()})
-    if(!findid) return res.status(400).send({status:false,message:"product already deleted"})
-    res.status(200).send({status:true,message:"product successsfully deleted"})
+        let productId=req.params.productId 
+
+        if(!isValidObjectId(productId)){
+           return res.status(404).send({status:false,message:"please provide valid productid"})
+        }
+
+    let checkProductId = await productModel.findOneAndUpdate(
+      {_id:productId , isDelete:false},
+      {isDelete:true , deletedAt:Date.now()})
+
+    if(checkProductId){
+         return res.status(404).send({ status : false , message :" Product already deleted."})
+    }
+    return res.status(200).send({ status : true , message :"Product successsfully deleted."})
 }catch(error){
-    res.status(500).send({status:false,message:error.message})
+    return res.status(500).send({ status : false , message : error.message })
 }
 }
 
-module.exports = { createProduct , getProductById ,getProducts,productdelete};
+module.exports = { createProduct , getProductById ,getProducts,updateProduct,deleteProduct};

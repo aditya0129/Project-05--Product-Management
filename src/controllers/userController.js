@@ -14,9 +14,14 @@ const register = async function (req, res) {
     try {
         let files = req.files
         let data = req.body;
+       
+        // if(data.address[0] != "{") {
+        //     data.address = "{" + data.address + "}"
+        // }
         if (data.address) {
             data.address = JSON.parse(data.address);
         }
+            
 
         if (Object.keys(data).length == 0 && (!files || files.length == 0))
             return res
@@ -34,7 +39,7 @@ const register = async function (req, res) {
             return res
                 .status(400)
                 .send({ status: false, message: "Please provide valid  fname" });
-
+  
         if (!lname)
             return res
                 .status(400)
@@ -297,7 +302,7 @@ const updateUser = async function (req, res) {
             if(!validateName(fname)){
                 return res.status(400).send({ status: false, message: "First name must be string." });
            }
-            if (!fname.trim()) {
+            if ( !fname.trim() ) {
                 return res.status(400).send({ status: false, message: "First name can not be empty." });
             }
             fname = fname.trim();

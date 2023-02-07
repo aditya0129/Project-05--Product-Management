@@ -29,18 +29,6 @@ const validateMobileNo = (Number) => {
     return ((/^((\+91)?|91)?[6789][0-9]{9}$/g).test(Number));
 }
 
-
-//===================================== Pincode Regex Validation ===================================//
-
-
-const validatePincode = (pincode) => {
-    return (/^[1-9][0-9]{5}$/).test(pincode);
-}
-
-
-
-
-
 //===================================== Place Regex Validation ===================================//
 
 
@@ -69,4 +57,4 @@ const validatePrice = function (price) {
     return /^(true|false)$/.test(isFreeShipping);
   };
 
-module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping }
+module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping }
