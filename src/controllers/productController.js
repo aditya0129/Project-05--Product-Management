@@ -443,4 +443,4 @@ const deleteProduct=async function (req,res){
 
 
 
-module.exports = { createProduct , getProductById ,getProducts,updateProduct,deleteProduct};
+module.exports = { createProduct , getProductById , getProducts , updateProduct , deleteProduct };

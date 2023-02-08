@@ -72,5 +72,7 @@ const validatePrice = function (price) {
 const validateShipping = function (isFreeShipping) {
   return /^(true|false)$/.test(isFreeShipping);
 };
+const isValidateStatus = (value) => { return ['pending', 'completed', 'cancelled'].indexOf(value) !== -1 }
 
-module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping,validateDesc }
+
+module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping,validateDesc , isValidateStatus }

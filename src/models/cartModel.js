@@ -24,8 +24,8 @@ const cartSchema = new mongoose.Schema(
                     trim: true,
                     minlength: 1
                 },
-            },
-        ],
+                _id : false
+            }],
         totalItems: {
             type: Number,
             required: true,

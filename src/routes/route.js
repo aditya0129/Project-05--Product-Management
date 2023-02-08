@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { register,  getUsers, userLogin, updateUser } = require("../controllers/userController");
 const { createProduct , getProductById, getProducts,updateProduct,deleteProduct } = require("../controllers/productController")
 const { createCart , getCart , updateCart , deleteCart } = require("../controllers/cartController")
+const { createOrder , updateOrder } = require("../controllers/orderController") 
 const { isAuthenticated, isAuthorized } = require("../middleware/commonMiddleware")
 
 
@@ -23,6 +24,10 @@ router.post("/users/:userId/cart",isAuthenticated , isAuthorized, createCart);
 router.get("/users/:userId/cart", isAuthenticated , isAuthorized, getCart);
 router.put("/users/:userId/cart" ,isAuthenticated, isAuthorized, updateCart);
 router.delete("/users/:userId/cart",isAuthenticated , isAuthorized, deleteCart);
+
+router.post("/users/:userId/orders",isAuthenticated , isAuthorized, createOrder);
+router.put("/users/:userId/orders" ,isAuthenticated, isAuthorized, updateOrder);
+
 
 
 router.all('/*', (req , res) => {
