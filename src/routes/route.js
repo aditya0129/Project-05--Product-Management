@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { register,  getUsers, userLogin, updateUser } = require("../controllers/userController");
-const {createProduct , getProductById, getProducts,updateProduct,deleteProduct } = require("../controllers/productController")
-const{ createCart , getCart , updatedCart ,deleteCart } = require("../controllers/cartController")
+const { createProduct , getProductById, getProducts,updateProduct,deleteProduct } = require("../controllers/productController")
+const { createCart , getCart , updateCart , deleteCart } = require("../controllers/cartController")
 const { isAuthenticated, isAuthorized } = require("../middleware/commonMiddleware")
 
 
@@ -21,7 +21,7 @@ router.delete("/products/:productId",deleteProduct)
 
 router.post("/users/:userId/cart",isAuthenticated , isAuthorized, createCart);
 router.get("/users/:userId/cart", isAuthenticated , isAuthorized, getCart);
-router.put("/users/:userId/cart" ,isAuthenticated, isAuthorized, updatedCart);
+router.put("/users/:userId/cart" ,isAuthenticated, isAuthorized, updateCart);
 router.delete("/users/:userId/cart",isAuthenticated , isAuthorized, deleteCart);
 
 
