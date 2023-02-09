@@ -70,6 +70,7 @@ const register = async function (req, res) {
         .send({ status: false, messsage: "Please provide valid email" });
 
     let checkEmailId = await userModel.findOne({ email: email });
+
     if (checkEmailId) {
       return res
         .status(400)
@@ -87,6 +88,7 @@ const register = async function (req, res) {
         .send({ status: false, messsage: "Please provide valid phone Number" });
 
     let checkphone = await userModel.findOne({ phone: phone });
+
     if (checkphone) {
       return res
         .status(400)
@@ -95,6 +97,7 @@ const register = async function (req, res) {
           message: "This mobile number is already in use.",
         });
     }
+
     if (!password)
       return res
         .status(400)
@@ -197,7 +200,8 @@ const register = async function (req, res) {
     
     
     let savedata = await userModel.create(data);
-    res.status(201).send({
+
+    return res.status(201).send({
       status: true,
       message: "User created successfully",
       data: savedata,
@@ -242,7 +246,9 @@ const userLogin = async function (req, res) {
 
     let verifyUser = await userModel.findOne({ email: email });
     if (!verifyUser) {
-      return res.status(400).send({ status: false, message: "user not found" });
+      return res
+      .status(400)
+      .send({ status: false, message: "user not found" });
     }
 
     let hash = verifyUser.password;
@@ -257,17 +263,19 @@ const userLogin = async function (req, res) {
     let token = jwt.sign(payload, "group-13-project", { expiresIn: "1h" });
 
     res.setHeader("x-api-key", token);
-    res.status(200).send({
+    return res.status(200).send({
       status: true,
       message: "User login successfull",
       data: { userId: verifyUser["_id"], token },
     });
   } catch (error) {
-    res.status(500).send({ status: false, message: error.message });
+    return res.status(500).send({ status: false, message: error.message });
   }
 };
 
+
 //======================================== Get User ==========================================//
+
 
 const getUsers = async function (req, res) {
   try {
@@ -279,8 +287,10 @@ const getUsers = async function (req, res) {
         .send({ status: false, message: "User is invalid" });
 
     let getData = await userModel.findOne({ _id: userId });
+
     if (!getData)
       return res.status(404).send({ status: false, message: "user not found" });
+      
     return res
       .status(200)
       .send({ status: true, message: "User profile details", data: getData });

@@ -2,7 +2,7 @@
 
 
 const validateName = (name) => {
-  return (/^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$/i.test(name));
+  return (/^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$/i.test(name))
 }
 
 
@@ -15,7 +15,7 @@ const validateDescription = (title) => {
 
 
 const validateEmail = (email) => {
-  return (/^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/.test(email));
+  return (/^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/.test(email))
 }
 
 
@@ -39,7 +39,7 @@ const validateMobileNo = (Number) => {
 
 
 const validatePincode = (pincode) => {
-  return (/^[1-9][0-9]{5}$/).test(pincode);
+  return ((/^[1-9][0-9]{5}$/).test(pincode));
 }
 
 
@@ -47,14 +47,15 @@ const validatePincode = (pincode) => {
 
 
 const validatePlace = (value) => {
-  return (/^[^\W\d_]+\.?(?:[-\s'’][^\W\d_]+\.?)*$/).test(value);
+  return ((/^[^\W\d_]+\.?(?:[-\s'’][^\W\d_]+\.?)*$/).test(value));
 }
+
 
 // ===================================== Image validation ====================================== //
 
 
 const ValidateFile = (value) => { 
-  return (/\.(gif|jpe?g|tiff?|png|webp|bmp)$/).test(value) 
+  return ((/\.(gif|jpeg?|jpg?|tiff?|png|webp|bmp)$/).test(value));
 }
 
 
@@ -62,7 +63,7 @@ const ValidateFile = (value) => {
 
 
 const ValidateStyle =  (value) => {
-  return (/^[a-zA-Z _.-]+$/).test(value);
+  return ((/^[a-zA-Z _.-]+$/).test(value));
 };
 
 
@@ -70,21 +71,16 @@ const ValidateStyle =  (value) => {
 
 
 const validatePrice =  (price) => {
-  return (/^\d{0,8}(\.\d{1,9})?$/).test(price);
+  return ((/^\d{0,8}(\.\d{1,9})?$/).test(price));
 };
 
-// ===================================== Shipping validation ====================================== //
-
-const validateShipping =  (isFreeShipping) => {
-  return (/^(true|false)$/).test(isFreeShipping);
-};
 
 // ===================================== Status validation ====================================== //
 
 
 const ValidateStatus = (value) => { 
-  return ['pending', 'completed', 'cancelled'].indexOf(value) !== -1 
+  return (['pending', 'completed', 'cancelled'].indexOf(value)) !== -1 
 }
 
 
-module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice ,  ValidateStyle, ValidateFile, validateShipping, validateDescription , ValidateStatus }
+module.exports = { validateName , validateEmail , validatePassword , validateMobileNo , validatePincode , validatePlace , validatePrice ,  ValidateStyle , ValidateFile , validateDescription , ValidateStatus }
