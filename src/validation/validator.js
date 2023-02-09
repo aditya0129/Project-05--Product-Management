@@ -6,11 +6,9 @@ const validateName = (name) => {
 }
 
 
-const validateDesc = function(title){
-  const validTitle= /^[a-z A-Z0-9_]{3,30}$/
-  return validTitle.test(title)
+const validateDescription = (title) => {
+  return ( /^[a-z A-Z0-9_]{3,30}$/.test(title))
 }
-
 
 
 //====================================== Email Regex Validation =======================================//
@@ -45,9 +43,6 @@ const validatePincode = (pincode) => {
 }
 
 
-
-
-
 //===================================== Place Regex Validation ===================================//
 
 
@@ -55,24 +50,41 @@ const validatePlace = (value) => {
   return (/^[^\W\d_]+\.?(?:[-\s'’][^\W\d_]+\.?)*$/).test(value);
 }
 
-const ValidateFile = (value) => { return (/\.(gif|jpe?g|tiff?|png|webp|bmp)$/).test(value) }
+// ===================================== Image validation ====================================== //
 
 
-//Style Validation
-const ValidateStyle = function (value) {
-  return /^[a-zA-Z _.-]+$/.test(value);
+const ValidateFile = (value) => { 
+  return (/\.(gif|jpe?g|tiff?|png|webp|bmp)$/).test(value) 
+}
+
+
+// ===================================== Style validation ====================================== //
+
+
+const ValidateStyle =  (value) => {
+  return (/^[a-zA-Z _.-]+$/).test(value);
 };
 
-//Price validation
-const validatePrice = function (price) {
-  return /^\d{0,8}(\.\d{1,9})?$/.test(price);
+
+// ===================================== Price validation ====================================== //
+
+
+const validatePrice =  (price) => {
+  return (/^\d{0,8}(\.\d{1,9})?$/).test(price);
 };
 
+// ===================================== Shipping validation ====================================== //
 
-const validateShipping = function (isFreeShipping) {
-  return /^(true|false)$/.test(isFreeShipping);
+const validateShipping =  (isFreeShipping) => {
+  return (/^(true|false)$/).test(isFreeShipping);
 };
-const isValidateStatus = (value) => { return ['pending', 'completed', 'cancelled'].indexOf(value) !== -1 }
+
+// ===================================== Status validation ====================================== //
 
 
-module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice,ValidateStyle,ValidateFile,validateShipping,validateDesc , isValidateStatus }
+const ValidateStatus = (value) => { 
+  return ['pending', 'completed', 'cancelled'].indexOf(value) !== -1 
+}
+
+
+module.exports = { validateName, validateEmail, validatePassword, validateMobileNo, validatePincode, validatePlace,validatePrice ,  ValidateStyle, ValidateFile, validateShipping, validateDescription , ValidateStatus }
