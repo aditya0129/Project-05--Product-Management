@@ -140,7 +140,7 @@ const getCart = async function ( req , res ) {
           return res.status(404).send({ status : false , message : "No user found with this userId." });
       }
 
-      let getCartData = await cartModel.findById( userId );
+      let getCartData = await cartModel.findOne({userId : userId });
 
       if ( !getCartData ) {
           return res.status(404).send({ status : false , message : "Cart not found with this userId." });
@@ -284,7 +284,7 @@ const updateCart = async function ( req , res ) {
 const deleteCart = async function ( req , res ) {
   try{ 
 
-      let userId = req.pramas.userId
+      let userId = req.params.userId
   
       if( !isValidObjectId ( userId )) {
         return res.status(400).send({ status : false , message : "Please provide valid userId. "})
