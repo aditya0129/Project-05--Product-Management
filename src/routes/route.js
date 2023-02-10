@@ -44,7 +44,7 @@ router.put( "/users/:userId/orders" , isAuthenticated , isAuthorized , updateOrd
 // ===================================== Invalid path ====================================== //
 
 
-router.all('/*', ( req , res ) => {
+router.all('/*', function ( req , res )  {
     res.status(400).send({ status: false, message: " Path invalid." });
 });
 
